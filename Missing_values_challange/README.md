@@ -11,7 +11,7 @@ The code was created on the Databricks platform in a GitHub repo, so some of the
 # Report
 Our team developed a comprehensive multi-dimensional visualization system to diagnose missing values in Spark DataFrames, combining quantitative summaries with visual pattern detection across columns, rows, types, and geographic categories.
 ## Motivations
-Missing data patterns reveal critical insights about data quality, collection processes, and potential modeling challenges. Our visualization suite addresses three key diagnostic needs:\
+Missing data patterns reveal critical insights about data quality, collection processes, and potential modeling challenges. Our visualization suite addresses three key diagnostic needs:
 * Volume Assessment - Quickly identify which columns have substantial missingness that may require imputation or exclusion
 * Pattern Detection - Discover whether values are missing completely at random (MCAR), at random (MAR), or not at random (MNAR) through co-missingness analysis
 * Context-Specific Analysis - Understand how missingness varies by data type, geographic region, and business context to inform targeted data quality improvements
