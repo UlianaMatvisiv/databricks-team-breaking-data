@@ -28,6 +28,7 @@ perhaps these entries have a common cause. The Airbnb data contained entire reco
 Sorted bar chart showing percentage of missing values per column, enabling quick prioritization:
 - Identifies high-missingness fields (calendar_updated, bathrooms, neighbourhood_group_cleansed at 100%)
 - Reveals moderate missingness in review-related fields (~15-48%)
+  
 **3. Co-Missingness Correlation Matrix**\
 Correlation heatmap of missing value indicators across top-N columns with highest missingness. Shows which pairs of features have gaps at the same time (high correlation → structural dependence):
 - Strong yellow diagonal reveals perfect correlation (same field)
