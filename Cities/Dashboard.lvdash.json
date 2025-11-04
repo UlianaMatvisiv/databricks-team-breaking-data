@@ -1,0 +1,965 @@
+{
+  "datasets": [
+    {
+      "name": "39d52b3a",
+      "displayName": "overview_paris",
+      "queryLines": [
+        "SELECT *\r\n",
+        "FROM workspace.airbnb_gold.city_overview\r\n",
+        "WHERE city = 'Paris';\r\n",
+        "\r\n"
+      ],
+      "catalog": "workspace",
+      "schema": "airbnb_gold"
+    },
+    {
+      "name": "e334eae3",
+      "displayName": "month",
+      "queryLines": [
+        "SELECT\r\n",
+        "  city,\r\n",
+        "  date_trunc('month', last_scraped_dt) AS month,\r\n",
+        "  ROUND(AVG(avg_price_per_night), 2) AS avg_price_per_night\r\n",
+        "FROM workspace.airbnb_gold.city_daily_metrics\r\n",
+        "WHERE city IN ('Paris', 'Venice')\r\n",
+        "GROUP BY city, date_trunc('month', last_scraped_dt)\r\n",
+        "ORDER BY month;"
+      ],
+      "catalog": "workspace",
+      "schema": "airbnb_gold"
+    },
+    {
+      "name": "072b8d4b",
+      "displayName": "quarter",
+      "queryLines": [
+        "SELECT\r\n",
+        "  city,\r\n",
+        "  date_trunc('quarter', last_scraped_dt) AS quarter,\r\n",
+        "  ROUND(AVG(avg_price_per_night), 2) AS avg_price\r\n",
+        "FROM workspace.airbnb_gold.city_daily_metrics\r\n",
+        "WHERE city IN ('Paris', 'Venice')\r\n",
+        "GROUP BY city, date_trunc('quarter', last_scraped_dt)\r\n",
+        "ORDER BY quarter;"
+      ],
+      "catalog": "workspace",
+      "schema": "airbnb_gold"
+    },
+    {
+      "name": "4983dff3",
+      "displayName": "availability",
+      "queryLines": [
+        "SELECT\r\n",
+        "  city,\r\n",
+        "  date_trunc('month', last_scraped_dt) AS month,\r\n",
+        "  ROUND(AVG(occupancy_rate_estimate), 3) AS avg_occupancy_rate\r\n",
+        "FROM workspace.airbnb_gold.city_daily_metrics\r\n",
+        "WHERE city IN ('Paris', 'Venice')\r\n",
+        "GROUP BY city, date_trunc('month', last_scraped_dt)\r\n",
+        "ORDER BY month;"
+      ]
+    },
+    {
+      "name": "5772a49e",
+      "displayName": "roomtype",
+      "queryLines": [
+        "SELECT\r\n",
+        "  city,\r\n",
+        "  room_type,\r\n",
+        "  COUNT(*) AS listings_count,\r\n",
+        "  ROUND(\r\n",
+        "    100 * COUNT(*) / SUM(COUNT(*)) OVER (PARTITION BY city), 2\r\n",
+        "  ) AS pct_of_total\r\n",
+        "FROM workspace.airbnb_gold.room_type_distribution\r\n",
+        "WHERE city IN ('Paris', 'Venice')\r\n",
+        "GROUP BY city, room_type\r\n",
+        "ORDER BY city, pct_of_total DESC;"
+      ],
+      "catalog": "workspace",
+      "schema": "airbnb_gold"
+    },
+    {
+      "name": "a2daad07",
+      "displayName": "crosscity",
+      "queryLines": [
+        "SELECT *\r\n",
+        "FROM workspace.airbnb_gold.city_daily_metrics\r\n",
+        "WHERE city IN ('Paris','Venice');\r\n",
+        "\r\n",
+        "SELECT\r\n",
+        "  city,\r\n",
+        "  MAX(last_scraped_dt) AS last_date,\r\n",
+        "  MAX_BY(total_listings, last_scraped_dt)      AS total_listings,\r\n",
+        "  ROUND(MAX_BY(avg_price_per_night, last_scraped_dt),2)  AS avg_price_per_night,\r\n",
+        "  ROUND(MAX_BY(occupancy_rate_estimate, last_scraped_dt),3) AS avg_occupancy_rate,\r\n",
+        "  ROUND(MAX_BY(avg_review_score, last_scraped_dt),2)    AS avg_review_score\r\n",
+        "FROM workspace.airbnb_gold.city_daily_metrics\r\n",
+        "WHERE city IN ('Paris','Venice')\r\n",
+        "GROUP BY city\r\n",
+        "ORDER BY city;\r\n"
+      ]
+    },
+    {
+      "name": "be6d14b4",
+      "displayName": "gold",
+      "queryLines": [
+        "SELECT *\r\n",
+        "FROM workspace.airbnb_gold.city_daily_metrics;"
+      ]
+    },
+    {
+      "name": "a218c539",
+      "displayName": "overview_venice",
+      "queryLines": [
+        "SELECT *\r\n",
+        "FROM workspace.airbnb_gold.city_overview\r\n",
+        "WHERE city = 'Venice';\r\n",
+        "\r\n"
+      ],
+      "catalog": "workspace",
+      "schema": "airbnb_gold"
+    },
+    {
+      "name": "60cabc0a",
+      "displayName": "neighborhood",
+      "queryLines": [
+        "SELECT\r\n",
+        "  city,\r\n",
+        "  neighbourhood_cleansed AS neighborhood,\r\n",
+        "  ROUND(AVG(avg_price), 2) AS avg_price,\r\n",
+        "  ROUND(AVG(occupancy_rate_estimate), 3) AS avg_occupancy_rate,\r\n",
+        "  SUM(listings_count) AS listings_count\r\n",
+        "FROM workspace.airbnb_gold.neighborhood_metrics\r\n",
+        "WHERE city IN ('Paris', 'Venice')\r\n",
+        "GROUP BY city, neighbourhood_cleansed\r\n",
+        "ORDER BY city, avg_price DESC;\r\n"
+      ],
+      "catalog": "workspace",
+      "schema": "airbnb_gold"
+    },
+    {
+      "name": "cbbae50f",
+      "displayName": "percentdiff",
+      "queryLines": [
+        "WITH latest AS (\r\n",
+        "  SELECT\r\n",
+        "    city,\r\n",
+        "    MAX_BY(total_listings, last_scraped_dt)      AS total_listings,\r\n",
+        "    ROUND(MAX_BY(avg_price_per_night, last_scraped_dt),2)  AS avg_price_per_night,\r\n",
+        "    ROUND(MAX_BY(occupancy_rate_estimate, last_scraped_dt),3) AS avg_occupancy_rate,\r\n",
+        "    ROUND(MAX_BY(avg_review_score, last_scraped_dt),2)    AS avg_review_score\r\n",
+        "  FROM workspace.airbnb_gold.city_daily_metrics\r\n",
+        "  WHERE city IN ('Paris','Venice')\r\n",
+        "  GROUP BY city\r\n",
+        ")\r\n",
+        "SELECT\r\n",
+        "  p.city AS city_a, v.city AS city_b,\r\n",
+        "  ROUND( (v.avg_price_per_night - p.avg_price_per_night) / p.avg_price_per_night * 100, 2) AS pct_diff_price,\r\n",
+        "  ROUND( (v.avg_occupancy_rate - p.avg_occupancy_rate) / NULLIF(p.avg_occupancy_rate,0) * 100, 2) AS pct_diff_occupancy,\r\n",
+        "  ROUND( (v.total_listings - p.total_listings) / NULLIF(p.total_listings,0) * 100, 2) AS pct_diff_listings,\r\n",
+        "  ROUND( (v.avg_review_score - p.avg_review_score) / NULLIF(p.avg_review_score,0) * 100, 2) AS pct_diff_rating\r\n",
+        "FROM\r\n",
+        "  (SELECT * FROM latest WHERE city = 'Paris') p\r\n",
+        "CROSS JOIN\r\n",
+        "  (SELECT * FROM latest WHERE city = 'Venice') v;\r\n"
+      ]
+    },
+    {
+      "name": "1d20316d",
+      "displayName": "topneighborhoods",
+      "queryLines": [
+        "WITH latest_per_city AS (\r\n",
+        "  SELECT\r\n",
+        "    city,\r\n",
+        "    MAX(last_scraped_dt) AS latest_dt\r\n",
+        "  FROM workspace.airbnb_gold.neighborhood_metrics\r\n",
+        "  WHERE city IN ('Paris', 'Venice')\r\n",
+        "  GROUP BY city\r\n",
+        "),\r\n",
+        "filtered AS (\r\n",
+        "  SELECT m.*\r\n",
+        "  FROM workspace.airbnb_gold.neighborhood_metrics m\r\n",
+        "  INNER JOIN latest_per_city l\r\n",
+        "    ON m.city = l.city AND m.last_scraped_dt = l.latest_dt\r\n",
+        "),\r\n",
+        "ranked AS (\r\n",
+        "  SELECT\r\n",
+        "    city,\r\n",
+        "    neighbourhood_cleansed AS neighborhood,\r\n",
+        "    ROUND(avg_price, 2) AS avg_price,\r\n",
+        "    ROUND(occupancy_rate_estimate, 3) AS occupancy_rate,\r\n",
+        "    listings_count,\r\n",
+        "    ROW_NUMBER() OVER (PARTITION BY city ORDER BY avg_price DESC) AS city_rank\r\n",
+        "  FROM filtered\r\n",
+        ")\r\n",
+        "SELECT\r\n",
+        "  city,\r\n",
+        "  neighborhood,\r\n",
+        "  avg_price,\r\n",
+        "  occupancy_rate,\r\n",
+        "  listings_count,\r\n",
+        "  CASE\r\n",
+        "    WHEN city = 'Paris' THEN city_rank\r\n",
+        "    WHEN city = 'Venice' THEN city_rank + 10\r\n",
+        "  END AS rnk\r\n",
+        "FROM ranked\r\n",
+        "WHERE city_rank <= 10\r\n",
+        "ORDER BY rnk;\r\n"
+      ],
+      "catalog": "workspace",
+      "schema": "airbnb_gold"
+    }
+  ],
+  "pages": [
+    {
+      "name": "9dc33a8e",
+      "displayName": "Global Filters",
+      "pageType": "PAGE_TYPE_GLOBAL_FILTERS"
+    },
+    {
+      "name": "b134f892",
+      "displayName": "Price Trends",
+      "layout": [
+        {
+          "widget": {
+            "name": "8413cad3",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "e334eae3",
+                  "fields": [
+                    {
+                      "name": "city",
+                      "expression": "`city`"
+                    },
+                    {
+                      "name": "monthly(month)",
+                      "expression": "DATE_TRUNC(\"MONTH\", `month`)"
+                    },
+                    {
+                      "name": "avg_price_per_night",
+                      "expression": "`avg_price_per_night`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "monthly(month)",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "avg_price_per_night",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "color": {
+                  "fieldName": "city",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Price Trends Monthly",
+                "showDescription": false
+              }
+            }
+          },
+          "position": {
+            "x": 1,
+            "y": 0,
+            "width": 4,
+            "height": 7
+          }
+        },
+        {
+          "widget": {
+            "name": "08942a2c",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "072b8d4b",
+                  "fields": [
+                    {
+                      "name": "city",
+                      "expression": "`city`"
+                    },
+                    {
+                      "name": "monthly(quarter)",
+                      "expression": "DATE_TRUNC(\"MONTH\", `quarter`)"
+                    },
+                    {
+                      "name": "avg_price",
+                      "expression": "`avg_price`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "monthly(quarter)",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "avg_price",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "city",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Price Trends Quarter"
+              }
+            }
+          },
+          "position": {
+            "x": 1,
+            "y": 7,
+            "width": 4,
+            "height": 7
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS"
+    },
+    {
+      "name": "ada3529d",
+      "displayName": "Availability",
+      "layout": [
+        {
+          "widget": {
+            "name": "5b8ac839",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "4983dff3",
+                  "fields": [
+                    {
+                      "name": "city",
+                      "expression": "`city`"
+                    },
+                    {
+                      "name": "avg(avg_occupancy_rate)",
+                      "expression": "AVG(`avg_occupancy_rate`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "city",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "avg(avg_occupancy_rate)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "city",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "frame": {
+                "showDescription": false,
+                "showTitle": true,
+                "title": "Availibiality Comparison"
+              }
+            }
+          },
+          "position": {
+            "x": 1,
+            "y": 0,
+            "width": 3,
+            "height": 6
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS"
+    },
+    {
+      "name": "a39a1397",
+      "displayName": "Neighborhood",
+      "layout": [
+        {
+          "widget": {
+            "name": "60368189",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "60cabc0a",
+                  "fields": [
+                    {
+                      "name": "avg_occupancy_rate",
+                      "expression": "`avg_occupancy_rate`"
+                    },
+                    {
+                      "name": "city",
+                      "expression": "`city`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 1,
+              "widgetType": "choropleth-map",
+              "encodings": {
+                "color": {
+                  "fieldName": "avg_occupancy_rate",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "region": {
+                  "regionType": "mapbox-v4-admin",
+                  "admin0": {
+                    "type": "value",
+                    "value": "France",
+                    "geographicRole": "admin0-name"
+                  },
+                  "admin2": {
+                    "fieldName": "city",
+                    "type": "field",
+                    "geographicRole": "admin2-name"
+                  }
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Neighborhood Paris"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 7,
+            "width": 4,
+            "height": 8
+          }
+        },
+        {
+          "widget": {
+            "name": "1c9733af",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "60cabc0a",
+                  "fields": [
+                    {
+                      "name": "avg_occupancy_rate",
+                      "expression": "`avg_occupancy_rate`"
+                    },
+                    {
+                      "name": "city",
+                      "expression": "`city`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 1,
+              "widgetType": "choropleth-map",
+              "encodings": {
+                "color": {
+                  "fieldName": "avg_occupancy_rate",
+                  "scale": {
+                    "type": "quantitative",
+                    "colorRamp": {
+                      "mode": "scheme",
+                      "scheme": "blues"
+                    }
+                  }
+                },
+                "region": {
+                  "regionType": "mapbox-v4-admin",
+                  "admin0": {
+                    "type": "value",
+                    "value": "Italia",
+                    "geographicRole": "admin0-name"
+                  },
+                  "admin2": {
+                    "fieldName": "city",
+                    "type": "field",
+                    "geographicRole": "admin2-name"
+                  }
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Neighborhood Venice",
+                "showDescription": false
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 4,
+            "height": 7
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS"
+    },
+    {
+      "name": "a781d7ce",
+      "displayName": "Room type distribution",
+      "layout": [
+        {
+          "widget": {
+            "name": "00a7d316",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "5772a49e",
+                  "fields": [
+                    {
+                      "name": "count(room_type)",
+                      "expression": "COUNT(`room_type`)"
+                    },
+                    {
+                      "name": "room_type",
+                      "expression": "`room_type`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "pie",
+              "encodings": {
+                "angle": {
+                  "fieldName": "count(room_type)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "room_type",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 1,
+            "y": 0,
+            "width": 4,
+            "height": 6
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS"
+    },
+    {
+      "name": "da1c3966",
+      "displayName": "Cross City",
+      "layout": [
+        {
+          "widget": {
+            "name": "0a02d70e",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "a2daad07",
+                  "fields": [
+                    {
+                      "name": "city",
+                      "expression": "`city`"
+                    },
+                    {
+                      "name": "total_listings",
+                      "expression": "`total_listings`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "histogram",
+              "encodings": {
+                "x": {
+                  "fieldName": "city",
+                  "scale": {
+                    "type": "categorical"
+                  },
+                  "displayName": "city"
+                },
+                "y": {
+                  "fieldName": "total_listings",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "city",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Sum of Listrings by City"
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 0,
+            "width": 3,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "25c2a592",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "a2daad07",
+                  "fields": [
+                    {
+                      "name": "city",
+                      "expression": "`city`"
+                    },
+                    {
+                      "name": "avg_review_score",
+                      "expression": "`avg_review_score`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "histogram",
+              "encodings": {
+                "x": {
+                  "fieldName": "city",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "avg_review_score",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "city",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Review Score by City"
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 6,
+            "width": 3,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "c30e5b6b",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "a2daad07",
+                  "fields": [
+                    {
+                      "name": "city",
+                      "expression": "`city`"
+                    },
+                    {
+                      "name": "avg_price_per_night",
+                      "expression": "`avg_price_per_night`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "city",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "avg_price_per_night",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "city",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Price per night by City"
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 12,
+            "width": 3,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "63646f69",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "a2daad07",
+                  "fields": [
+                    {
+                      "name": "city",
+                      "expression": "`city`"
+                    },
+                    {
+                      "name": "avg_occupancy_rate",
+                      "expression": "`avg_occupancy_rate`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "city",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "avg_occupancy_rate",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "city",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Occupancy rate by City"
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 18,
+            "width": 3,
+            "height": 6
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS"
+    },
+    {
+      "name": "d7aee854",
+      "displayName": "Cross City: Percent Difference",
+      "layout": [
+        {
+          "widget": {
+            "name": "712eee6a",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "cbbae50f",
+                  "fields": [
+                    {
+                      "name": "sum(pct_diff_listings)",
+                      "expression": "SUM(`pct_diff_listings`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "histogram",
+              "encodings": {
+                "y": {
+                  "fieldName": "sum(pct_diff_listings)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Cross-City Comparison: Paris vs Venice"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 4,
+            "height": 3
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS"
+    },
+    {
+      "name": "e3431b0c",
+      "displayName": "Cross City: Top Neighborhoods",
+      "layout": [
+        {
+          "widget": {
+            "name": "9e8ee8bc",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "1d20316d",
+                  "fields": [
+                    {
+                      "name": "city",
+                      "expression": "`city`"
+                    },
+                    {
+                      "name": "neighborhood",
+                      "expression": "`neighborhood`"
+                    },
+                    {
+                      "name": "occupancy_rate",
+                      "expression": "`occupancy_rate`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "neighborhood",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "occupancy_rate",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "city",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 1,
+            "y": 0,
+            "width": 4,
+            "height": 8
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    },
+    "genieSpace": {
+      "isEnabled": true,
+      "overrideId": "01f0b973aa9b1307b75cce2e7180cbaa"
+    }
+  }
+}
