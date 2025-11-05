@@ -69,8 +69,8 @@
         "  ROUND(\r\n",
         "    100 * COUNT(*) / SUM(COUNT(*)) OVER (PARTITION BY city), 2\r\n",
         "  ) AS pct_of_total\r\n",
-        "FROM workspace.airbnb_gold.room_type_distribution\r\n",
-        "WHERE city IN ('Paris', 'Venice')\r\n",
+        "FROM workspace.airbnb_silver.listings\r\n",
+        "WHERE city = 'Venice'\r\n",
         "GROUP BY city, room_type\r\n",
         "ORDER BY city, pct_of_total DESC;"
       ],
@@ -81,19 +81,17 @@
       "name": "a2daad07",
       "displayName": "crosscity",
       "queryLines": [
-        "SELECT *\r\n",
-        "FROM workspace.airbnb_gold.city_daily_metrics\r\n",
-        "WHERE city IN ('Paris','Venice');\r\n",
-        "\r\n",
         "SELECT\r\n",
         "  city,\r\n",
         "  MAX(last_scraped_dt) AS last_date,\r\n",
-        "  MAX_BY(total_listings, last_scraped_dt)      AS total_listings,\r\n",
-        "  ROUND(MAX_BY(avg_price_per_night, last_scraped_dt),2)  AS avg_price_per_night,\r\n",
-        "  ROUND(MAX_BY(occupancy_rate_estimate, last_scraped_dt),3) AS avg_occupancy_rate,\r\n",
-        "  ROUND(MAX_BY(avg_review_score, last_scraped_dt),2)    AS avg_review_score\r\n",
+        "  MAX_BY(total_listings, last_scraped_dt) AS total_listings,\r\n",
+        "  ROUND(MAX_BY(avg_price_per_night, last_scraped_dt), 2) AS avg_price_per_night,\r\n",
+        "  ROUND(MAX_BY(occupancy_rate_estimate, last_scraped_dt), 3) AS avg_occupancy_rate,\r\n",
+        "  ROUND(MAX_BY(avg_review_score, last_scraped_dt), 2) AS avg_review_score\r\n",
         "FROM workspace.airbnb_gold.city_daily_metrics\r\n",
-        "WHERE city IN ('Paris','Venice')\r\n",
+        "WHERE \r\n",
+        "  (city = 'Paris'  AND MONTH(TO_DATE(last_scraped_dt)) = 6) OR\r\n",
+        "  (city = 'Venice' AND MONTH(TO_DATE(last_scraped_dt)) = 9)\r\n",
         "GROUP BY city\r\n",
         "ORDER BY city;\r\n"
       ]
@@ -233,15 +231,15 @@
                       "expression": "`city`"
                     },
                     {
-                      "name": "monthly(month)",
-                      "expression": "DATE_TRUNC(\"MONTH\", `month`)"
+                      "name": "month",
+                      "expression": "`month`"
                     },
                     {
-                      "name": "avg_price_per_night",
-                      "expression": "`avg_price_per_night`"
+                      "name": "max(avg_price_per_night)",
+                      "expression": "MAX(`avg_price_per_night`)"
                     }
                   ],
-                  "disaggregated": true
+                  "disaggregated": false
                 }
               }
             ],
@@ -250,15 +248,15 @@
               "widgetType": "bar",
               "encodings": {
                 "x": {
-                  "fieldName": "monthly(month)",
+                  "fieldName": "month",
                   "scale": {
                     "type": "categorical"
                   }
                 },
                 "y": {
-                  "fieldName": "avg_price_per_night",
+                  "fieldName": "max(avg_price_per_night)",
                   "scale": {
-                    "type": "categorical"
+                    "type": "quantitative"
                   }
                 },
                 "color": {
@@ -266,6 +264,9 @@
                   "scale": {
                     "type": "categorical"
                   }
+                },
+                "label": {
+                  "show": true
                 }
               },
               "frame": {
@@ -394,6 +395,9 @@
                   "scale": {
                     "type": "categorical"
                   }
+                },
+                "label": {
+                  "show": true
                 }
               },
               "frame": {
@@ -557,32 +561,32 @@
                   "datasetName": "5772a49e",
                   "fields": [
                     {
-                      "name": "count(room_type)",
-                      "expression": "COUNT(`room_type`)"
-                    },
-                    {
                       "name": "room_type",
                       "expression": "`room_type`"
+                    },
+                    {
+                      "name": "listings_count",
+                      "expression": "`listings_count`"
                     }
                   ],
-                  "disaggregated": false
+                  "disaggregated": true
                 }
               }
             ],
             "spec": {
               "version": 3,
-              "widgetType": "pie",
+              "widgetType": "bar",
               "encodings": {
-                "angle": {
-                  "fieldName": "count(room_type)",
-                  "scale": {
-                    "type": "quantitative"
-                  }
-                },
-                "color": {
+                "x": {
                   "fieldName": "room_type",
                   "scale": {
                     "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "listings_count",
+                  "scale": {
+                    "type": "quantitative"
                   }
                 }
               }
@@ -646,6 +650,9 @@
                   "scale": {
                     "type": "categorical"
                   }
+                },
+                "label": {
+                  "show": true
                 }
               },
               "frame": {
@@ -704,6 +711,9 @@
                   "scale": {
                     "type": "categorical"
                   }
+                },
+                "label": {
+                  "show": true
                 }
               },
               "frame": {
@@ -762,6 +772,9 @@
                   "scale": {
                     "type": "categorical"
                   }
+                },
+                "label": {
+                  "show": true
                 }
               },
               "frame": {
@@ -820,6 +833,9 @@
                   "scale": {
                     "type": "categorical"
                   }
+                },
+                "label": {
+                  "show": true
                 }
               },
               "frame": {
