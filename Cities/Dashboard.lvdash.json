@@ -18,11 +18,11 @@
       "queryLines": [
         "SELECT\r\n",
         "  city,\r\n",
-        "  date_trunc('month', last_scraped_dt) AS month,\r\n",
+        "  date_trunc('month', scrape_dt) AS month,\r\n",
         "  ROUND(AVG(avg_price_per_night), 2) AS avg_price_per_night\r\n",
         "FROM workspace.airbnb_gold.city_daily_metrics\r\n",
         "WHERE city IN ('Paris', 'Venice')\r\n",
-        "GROUP BY city, date_trunc('month', last_scraped_dt)\r\n",
+        "GROUP BY city, date_trunc('month', scrape_dt)\r\n",
         "ORDER BY month;"
       ],
       "catalog": "workspace",
@@ -34,12 +34,12 @@
       "queryLines": [
         "SELECT\r\n",
         "  city,\r\n",
-        "  date_trunc('quarter', last_scraped_dt) AS quarter,\r\n",
+        "  date_trunc('quarter', scrape_dt) AS quarter,\r\n",
         "  ROUND(AVG(avg_price_per_night), 2) AS avg_price\r\n",
         "FROM workspace.airbnb_gold.city_daily_metrics\r\n",
         "WHERE city IN ('Paris', 'Venice')\r\n",
-        "GROUP BY city, date_trunc('quarter', last_scraped_dt)\r\n",
-        "ORDER BY quarter;"
+        "GROUP BY city, date_trunc('quarter', scrape_dt)\r\n",
+        "ORDER BY quarter;\r\n"
       ],
       "catalog": "workspace",
       "schema": "airbnb_gold"
@@ -50,11 +50,11 @@
       "queryLines": [
         "SELECT\r\n",
         "  city,\r\n",
-        "  date_trunc('month', last_scraped_dt) AS month,\r\n",
+        "  date_trunc('month', scrape_dt) AS month,\r\n",
         "  ROUND(AVG(occupancy_rate_estimate), 3) AS avg_occupancy_rate\r\n",
         "FROM workspace.airbnb_gold.city_daily_metrics\r\n",
         "WHERE city IN ('Paris', 'Venice')\r\n",
-        "GROUP BY city, date_trunc('month', last_scraped_dt)\r\n",
+        "GROUP BY city, date_trunc('month', scrape_dt)\r\n",
         "ORDER BY month;"
       ]
     },
@@ -70,7 +70,7 @@
         "    100 * COUNT(*) / SUM(COUNT(*)) OVER (PARTITION BY city), 2\r\n",
         "  ) AS pct_of_total\r\n",
         "FROM workspace.airbnb_silver.listings\r\n",
-        "WHERE city = 'Venice'\r\n",
+        "WHERE city == 'Venice'\r\n",
         "GROUP BY city, room_type\r\n",
         "ORDER BY city, pct_of_total DESC;"
       ],
@@ -83,15 +83,15 @@
       "queryLines": [
         "SELECT\r\n",
         "  city,\r\n",
-        "  MAX(last_scraped_dt) AS last_date,\r\n",
-        "  MAX_BY(total_listings, last_scraped_dt) AS total_listings,\r\n",
-        "  ROUND(MAX_BY(avg_price_per_night, last_scraped_dt), 2) AS avg_price_per_night,\r\n",
-        "  ROUND(MAX_BY(occupancy_rate_estimate, last_scraped_dt), 3) AS avg_occupancy_rate,\r\n",
-        "  ROUND(MAX_BY(avg_review_score, last_scraped_dt), 2) AS avg_review_score\r\n",
+        "  MAX(scrape_dt) AS last_date,\r\n",
+        "  MAX_BY(total_listings, scrape_dt) AS total_listings,\r\n",
+        "  ROUND(MAX_BY(avg_price_per_night, scrape_dt), 2) AS avg_price_per_night,\r\n",
+        "  ROUND(MAX_BY(occupancy_rate_estimate, scrape_dt), 3) AS avg_occupancy_rate,\r\n",
+        "  ROUND(MAX_BY(avg_review_score, scrape_dt), 2) AS avg_review_score\r\n",
         "FROM workspace.airbnb_gold.city_daily_metrics\r\n",
         "WHERE \r\n",
-        "  (city = 'Paris'  AND MONTH(TO_DATE(last_scraped_dt)) = 6) OR\r\n",
-        "  (city = 'Venice' AND MONTH(TO_DATE(last_scraped_dt)) = 9)\r\n",
+        "  (city = 'Paris'  AND MONTH(TO_DATE(scrape_dt)) = 6) OR\r\n",
+        "  (city = 'Venice' AND MONTH(TO_DATE(scrape_dt)) = 9)\r\n",
         "GROUP BY city\r\n",
         "ORDER BY city;\r\n"
       ]
@@ -141,10 +141,10 @@
         "WITH latest AS (\r\n",
         "  SELECT\r\n",
         "    city,\r\n",
-        "    MAX_BY(total_listings, last_scraped_dt)      AS total_listings,\r\n",
-        "    ROUND(MAX_BY(avg_price_per_night, last_scraped_dt),2)  AS avg_price_per_night,\r\n",
-        "    ROUND(MAX_BY(occupancy_rate_estimate, last_scraped_dt),3) AS avg_occupancy_rate,\r\n",
-        "    ROUND(MAX_BY(avg_review_score, last_scraped_dt),2)    AS avg_review_score\r\n",
+        "    MAX_BY(total_listings, scrape_dt)      AS total_listings,\r\n",
+        "    ROUND(MAX_BY(avg_price_per_night, scrape_dt),2)  AS avg_price_per_night,\r\n",
+        "    ROUND(MAX_BY(occupancy_rate_estimate, scrape_dt),3) AS avg_occupancy_rate,\r\n",
+        "    ROUND(MAX_BY(avg_review_score, scrape_dt),2)    AS avg_review_score\r\n",
         "  FROM workspace.airbnb_gold.city_daily_metrics\r\n",
         "  WHERE city IN ('Paris','Venice')\r\n",
         "  GROUP BY city\r\n",
@@ -168,7 +168,7 @@
         "WITH latest_per_city AS (\r\n",
         "  SELECT\r\n",
         "    city,\r\n",
-        "    MAX(last_scraped_dt) AS latest_dt\r\n",
+        "    MAX(scrape_dt) AS latest_dt\r\n",
         "  FROM workspace.airbnb_gold.neighborhood_metrics\r\n",
         "  WHERE city IN ('Paris', 'Venice')\r\n",
         "  GROUP BY city\r\n",
@@ -177,7 +177,7 @@
         "  SELECT m.*\r\n",
         "  FROM workspace.airbnb_gold.neighborhood_metrics m\r\n",
         "  INNER JOIN latest_per_city l\r\n",
-        "    ON m.city = l.city AND m.last_scraped_dt = l.latest_dt\r\n",
+        "    ON m.city = l.city AND m.scrape_dt = l.latest_dt\r\n",
         "),\r\n",
         "ranked AS (\r\n",
         "  SELECT\r\n",
@@ -316,7 +316,7 @@
                 "x": {
                   "fieldName": "monthly(quarter)",
                   "scale": {
-                    "type": "temporal"
+                    "type": "categorical"
                   }
                 },
                 "y": {
@@ -475,7 +475,7 @@
           },
           "position": {
             "x": 0,
-            "y": 7,
+            "y": 0,
             "width": 4,
             "height": 8
           }
@@ -539,7 +539,7 @@
           },
           "position": {
             "x": 0,
-            "y": 0,
+            "y": 8,
             "width": 4,
             "height": 7
           }
@@ -580,7 +580,13 @@
                 "x": {
                   "fieldName": "room_type",
                   "scale": {
-                    "type": "categorical"
+                    "type": "categorical",
+                    "sort": {
+                      "by": "y-reversed"
+                    }
+                  },
+                  "axis": {
+                    "labelAngle": 0
                   }
                 },
                 "y": {
@@ -588,14 +594,42 @@
                   "scale": {
                     "type": "quantitative"
                   }
+                },
+                "label": {
+                  "show": true
                 }
               }
             }
           },
           "position": {
-            "x": 1,
+            "x": 0,
             "y": 0,
-            "width": 4,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "cde6d671",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "5772a49e",
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "pie",
+              "encodings": {}
+            }
+          },
+          "position": {
+            "x": 1,
+            "y": 6,
+            "width": 3,
             "height": 6
           }
         }
@@ -976,6 +1010,7 @@
     "genieSpace": {
       "isEnabled": true,
       "overrideId": "01f0b973aa9b1307b75cce2e7180cbaa"
-    }
+    },
+    "applyModeEnabled": false
   }
 }
