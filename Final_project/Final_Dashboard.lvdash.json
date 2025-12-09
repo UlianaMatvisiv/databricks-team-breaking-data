@@ -1,0 +1,1261 @@
+{
+  "datasets": [
+    {
+      "name": "3cee9a4b",
+      "displayName": "games_price_stats_year",
+      "queryLines": [
+        "SELECT *\r\n",
+        "FROM steam_project.gold.games_price_stats_by_year\r\n",
+        "ORDER BY year;"
+      ],
+      "catalog": "steam_project",
+      "schema": "gold"
+    },
+    {
+      "name": "8f9d56a0",
+      "displayName": "games_genre_trends_separated",
+      "queryLines": [
+        "SELECT\r\n",
+        "    year,\r\n",
+        "    COALESCE(`Action`, 0) AS action_count,\r\n",
+        "    COALESCE(`Indie`, 0)  AS indie_count,\r\n",
+        "    COALESCE(`Casual`, 0) AS casual_count\r\n",
+        "FROM (\r\n",
+        "    SELECT year, genre, count\r\n",
+        "    FROM steam_project.gold.games_genre_trends_key_genres\r\n",
+        ")\r\n",
+        "PIVOT (\r\n",
+        "    SUM(count)\r\n",
+        "    FOR genre IN ('Action' AS Action, 'Indie' AS Indie, 'Casual' AS Casual)\r\n",
+        ")\r\n",
+        "ORDER BY year;"
+      ],
+      "catalog": "steam_project",
+      "schema": "gold"
+    },
+    {
+      "name": "2a9846d1",
+      "displayName": "games_genre_trends",
+      "queryLines": [
+        "SELECT *\r\n",
+        "FROM steam_project.gold.games_genre_trends_key_genres\r\n",
+        "ORDER BY year, genre;"
+      ]
+    },
+    {
+      "name": "1c10cd31",
+      "displayName": "games_free_vs_paid",
+      "queryLines": [
+        "SELECT *\r\n",
+        "FROM steam_project.gold.games_free_vs_paid_share\r\n",
+        "ORDER BY year;"
+      ]
+    },
+    {
+      "name": "4b97d81b",
+      "displayName": "games_release_quarter",
+      "queryLines": [
+        "SELECT\r\n",
+        "    year,\r\n",
+        "    quarter,\r\n",
+        "    count\r\n",
+        "FROM steam_project.gold.games_releases_by_quarter\r\n",
+        "ORDER BY year, quarter;"
+      ],
+      "catalog": "steam_project",
+      "schema": "default"
+    }
+  ],
+  "pages": [
+    {
+      "name": "abee1d62",
+      "displayName": "games_price_stats_by_year",
+      "layout": [
+        {
+          "widget": {
+            "name": "b3625a56",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "3cee9a4b",
+                  "fields": [
+                    {
+                      "name": "num_games",
+                      "expression": "`num_games`"
+                    },
+                    {
+                      "name": "year",
+                      "expression": "`year`"
+                    },
+                    {
+                      "name": "avg_price",
+                      "expression": "`avg_price`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "year",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "avg_price",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "label": {
+                  "show": true
+                },
+                "extra": [
+                  {
+                    "fieldName": "num_games"
+                  }
+                ]
+              },
+              "mark": {
+                "colors": [
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 5
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 2
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 3
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 4
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 5
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 6
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 7
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 8
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 9
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 10
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "cff5cece",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "3cee9a4b",
+                  "fields": [
+                    {
+                      "name": "num_games",
+                      "expression": "`num_games`"
+                    },
+                    {
+                      "name": "year",
+                      "expression": "`year`"
+                    },
+                    {
+                      "name": "median_price",
+                      "expression": "`median_price`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "year",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "median_price",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "label": {
+                  "show": true
+                },
+                "extra": [
+                  {
+                    "fieldName": "num_games"
+                  }
+                ]
+              },
+              "mark": {
+                "colors": [
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 5
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 2
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 3
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 4
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 5
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 6
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 7
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 8
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 9
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 10
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 6,
+            "width": 6,
+            "height": 7
+          }
+        },
+        {
+          "widget": {
+            "name": "e477dab3",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "3cee9a4b",
+                  "fields": [
+                    {
+                      "name": "year",
+                      "expression": "`year`"
+                    },
+                    {
+                      "name": "num_games",
+                      "expression": "`num_games`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "year",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "num_games",
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "compact",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 1
+                    }
+                  },
+                  "scale": {
+                    "type": "quantitative",
+                    "domain": {
+                      "max": 15000
+                    }
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "mark": {
+                "colors": [
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 5
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 2
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 3
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 4
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 5
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 6
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 7
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 8
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 9
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 10
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 13,
+            "width": 6,
+            "height": 8
+          }
+        },
+        {
+          "widget": {
+            "name": "b609a9e9",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "3cee9a4b",
+                  "fields": [
+                    {
+                      "name": "min_price",
+                      "expression": "`min_price`"
+                    },
+                    {
+                      "name": "year",
+                      "expression": "`year`"
+                    },
+                    {
+                      "name": "max_price",
+                      "expression": "`max_price`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "year",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "max_price",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "label": {
+                  "show": true
+                },
+                "extra": [
+                  {
+                    "fieldName": "min_price"
+                  }
+                ]
+              },
+              "mark": {
+                "colors": [
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 5
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 2
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 3
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 4
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 5
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 6
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 7
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 8
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 9
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 10
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 21,
+            "width": 6,
+            "height": 7
+          }
+        },
+        {
+          "widget": {
+            "name": "16141beb",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "3cee9a4b",
+                  "fields": [
+                    {
+                      "name": "max_price",
+                      "expression": "`max_price`"
+                    },
+                    {
+                      "name": "year",
+                      "expression": "`year`"
+                    },
+                    {
+                      "name": "min_price",
+                      "expression": "`min_price`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "year",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "min_price",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "label": {
+                  "show": true
+                },
+                "extra": [
+                  {
+                    "fieldName": "max_price"
+                  }
+                ]
+              },
+              "mark": {
+                "colors": [
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 5
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 2
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 3
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 4
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 5
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 6
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 7
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 8
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 9
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 10
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 28,
+            "width": 6,
+            "height": 7
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS"
+    },
+    {
+      "name": "ab209b63",
+      "displayName": "games_genre_trends",
+      "layout": [
+        {
+          "widget": {
+            "name": "6c2b8cfc",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "8f9d56a0",
+                  "fields": [
+                    {
+                      "name": "year",
+                      "expression": "`year`"
+                    },
+                    {
+                      "name": "action_count",
+                      "expression": "`action_count`"
+                    },
+                    {
+                      "name": "casual_count",
+                      "expression": "`casual_count`"
+                    },
+                    {
+                      "name": "indie_count",
+                      "expression": "`indie_count`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "year",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "primary": {
+                    "fields": [
+                      {
+                        "fieldName": "action_count"
+                      },
+                      {
+                        "fieldName": "casual_count"
+                      },
+                      {
+                        "fieldName": "indie_count"
+                      }
+                    ],
+                    "scale": {
+                      "type": "quantitative"
+                    }
+                  },
+                  "secondary": {
+                    "fields": [],
+                    "scale": {
+                      "type": "quantitative"
+                    }
+                  }
+                },
+                "label": {
+                  "show": false
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 8
+          }
+        },
+        {
+          "widget": {
+            "name": "b1140abd",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "2a9846d1",
+                  "fields": [
+                    {
+                      "name": "count",
+                      "expression": "`count`"
+                    },
+                    {
+                      "name": "year",
+                      "expression": "`year`"
+                    },
+                    {
+                      "name": "genre",
+                      "expression": "`genre`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "heatmap",
+              "encodings": {
+                "x": {
+                  "fieldName": "year",
+                  "scale": {
+                    "type": "quantitative",
+                    "domain": {
+                      "max": 2024
+                    }
+                  }
+                },
+                "y": {
+                  "fieldName": "genre",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "color": {
+                  "fieldName": "count",
+                  "scale": {
+                    "type": "quantitative",
+                    "colorRamp": {
+                      "mode": "scheme",
+                      "scheme": "blueorange"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 9,
+            "width": 6,
+            "height": 8
+          }
+        },
+        {
+          "widget": {
+            "name": "5e142137",
+            "queries": [
+              {
+                "name": "dashboards/01f0d47e213513debed6a9a4591d7182/datasets/01f0d48594921424b72940cad974d0ff_genre",
+                "query": {
+                  "datasetName": "2a9846d1",
+                  "fields": [
+                    {
+                      "name": "genre",
+                      "expression": "`genre`"
+                    },
+                    {
+                      "name": "genre_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "genre",
+                    "queryName": "dashboards/01f0d47e213513debed6a9a4591d7182/datasets/01f0d48594921424b72940cad974d0ff_genre"
+                  }
+                ]
+              },
+              "frame": {
+                "showTitle": true
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 8,
+            "width": 2,
+            "height": 1
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS"
+    },
+    {
+      "name": "34e892c3",
+      "displayName": "Global Filters",
+      "layout": [
+        {
+          "widget": {
+            "name": "5d2cd7f7",
+            "queries": [
+              {
+                "name": "dashboards/01f0d47e213513debed6a9a4591d7182/datasets/01f0d48594921424b72940cad974d0ff_year",
+                "query": {
+                  "datasetName": "2a9846d1",
+                  "fields": [
+                    {
+                      "name": "min(year)",
+                      "expression": "MIN(`year`)"
+                    },
+                    {
+                      "name": "max(year)",
+                      "expression": "MAX(`year`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "range-slider",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "year",
+                    "queryName": "dashboards/01f0d47e213513debed6a9a4591d7182/datasets/01f0d48594921424b72940cad974d0ff_year"
+                  }
+                ]
+              },
+              "selection": {
+                "defaultSelection": {
+                  "range": {
+                    "dataType": "INTEGER",
+                    "min": {
+                      "value": "2010"
+                    },
+                    "max": {
+                      "value": "2024"
+                    }
+                  }
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Year Genre Popularity Analysis"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 1,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "63f4ff20",
+            "queries": [
+              {
+                "name": "dashboards/01f0d47e213513debed6a9a4591d7182/datasets/01f0d4872c4d194485c84fa8bf324d79_year",
+                "query": {
+                  "datasetName": "4b97d81b",
+                  "fields": [
+                    {
+                      "name": "min(year)",
+                      "expression": "MIN(`year`)"
+                    },
+                    {
+                      "name": "max(year)",
+                      "expression": "MAX(`year`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "range-slider",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "year",
+                    "queryName": "dashboards/01f0d47e213513debed6a9a4591d7182/datasets/01f0d4872c4d194485c84fa8bf324d79_year"
+                  }
+                ]
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Quarter Count per Year Analysis"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 8,
+            "width": 1,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "dfed3161",
+            "queries": [
+              {
+                "name": "dashboards/01f0d47e213513debed6a9a4591d7182/datasets/01f0d48594921424b72940cad974d0ff_genre",
+                "query": {
+                  "datasetName": "2a9846d1",
+                  "fields": [
+                    {
+                      "name": "genre",
+                      "expression": "`genre`"
+                    },
+                    {
+                      "name": "genre_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "genre",
+                    "queryName": "dashboards/01f0d47e213513debed6a9a4591d7182/datasets/01f0d48594921424b72940cad974d0ff_genre"
+                  }
+                ]
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Genre Trends Separated Analysis\n"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 4,
+            "width": 1,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "d22707f7",
+            "queries": [
+              {
+                "name": "dashboards/01f0d47e213513debed6a9a4591d7182/datasets/01f0d47ea7ac1de6b998259d1588677e_num_games",
+                "query": {
+                  "datasetName": "3cee9a4b",
+                  "fields": [
+                    {
+                      "name": "min(num_games)",
+                      "expression": "MIN(`num_games`)"
+                    },
+                    {
+                      "name": "max(num_games)",
+                      "expression": "MAX(`num_games`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "range-slider",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "num_games",
+                    "queryName": "dashboards/01f0d47e213513debed6a9a4591d7182/datasets/01f0d47ea7ac1de6b998259d1588677e_num_games"
+                  }
+                ]
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Number of Games per Year Analysis"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 1,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "206fbad9",
+            "queries": [
+              {
+                "name": "dashboards/01f0d47e213513debed6a9a4591d7182/datasets/01f0d48615f61fd2886beae9319d91a0_pct_free",
+                "query": {
+                  "datasetName": "1c10cd31",
+                  "fields": [
+                    {
+                      "name": "min(pct_free)",
+                      "expression": "MIN(`pct_free`)"
+                    },
+                    {
+                      "name": "max(pct_free)",
+                      "expression": "MAX(`pct_free`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "range-slider",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "pct_free",
+                    "queryName": "dashboards/01f0d47e213513debed6a9a4591d7182/datasets/01f0d48615f61fd2886beae9319d91a0_pct_free"
+                  }
+                ]
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Pct Free Games per Year Analysis"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 6,
+            "width": 1,
+            "height": 2
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_GLOBAL_FILTERS"
+    },
+    {
+      "name": "407f0047",
+      "displayName": "games_free_vs_paid",
+      "layout": [
+        {
+          "widget": {
+            "name": "6a10d211",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "1c10cd31",
+                  "fields": [
+                    {
+                      "name": "year",
+                      "expression": "`year`"
+                    },
+                    {
+                      "name": "Free",
+                      "expression": "`Free`"
+                    },
+                    {
+                      "name": "Paid",
+                      "expression": "`Paid`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "scatter",
+              "encodings": {
+                "x": {
+                  "fieldName": "year",
+                  "scale": {
+                    "type": "quantitative",
+                    "domain": {
+                      "max": 2024
+                    }
+                  }
+                },
+                "y": {
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "fields": [
+                    {
+                      "fieldName": "Free"
+                    },
+                    {
+                      "fieldName": "Paid"
+                    }
+                  ]
+                }
+              },
+              "mark": {
+                "size": 0.6
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 7
+          }
+        },
+        {
+          "widget": {
+            "name": "1f5fe22d",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "1c10cd31",
+                  "fields": [
+                    {
+                      "name": "year",
+                      "expression": "`year`"
+                    },
+                    {
+                      "name": "pct_free",
+                      "expression": "`pct_free`"
+                    },
+                    {
+                      "name": "pct_paid",
+                      "expression": "`pct_paid`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "scatter",
+              "encodings": {
+                "x": {
+                  "fieldName": "year",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "fields": [
+                    {
+                      "fieldName": "pct_free"
+                    },
+                    {
+                      "fieldName": "pct_paid"
+                    }
+                  ]
+                }
+              },
+              "mark": {
+                "size": 0.8
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 7,
+            "width": 6,
+            "height": 6
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS"
+    },
+    {
+      "name": "cab04490",
+      "displayName": "games_release_quarter",
+      "layout": [
+        {
+          "widget": {
+            "name": "a75a59ff",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "4b97d81b",
+                  "fields": [
+                    {
+                      "name": "count",
+                      "expression": "`count`"
+                    },
+                    {
+                      "name": "year",
+                      "expression": "`year`"
+                    },
+                    {
+                      "name": "quarter",
+                      "expression": "`quarter`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "heatmap",
+              "encodings": {
+                "x": {
+                  "fieldName": "year",
+                  "scale": {
+                    "type": "quantitative",
+                    "domain": {
+                      "max": 2024
+                    }
+                  }
+                },
+                "y": {
+                  "fieldName": "quarter",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "count",
+                  "scale": {
+                    "type": "quantitative",
+                    "colorRamp": {
+                      "mode": "scheme",
+                      "scheme": "blueorange"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 8
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    },
+    "genieSpace": {
+      "isEnabled": true,
+      "overrideId": "01f0d51d177c1adbbdc099d5458f978c",
+      "enablementMode": "ENABLED"
+    },
+    "applyModeEnabled": false
+  }
+}
