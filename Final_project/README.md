@@ -2,6 +2,9 @@
 
 ## Тема проекту: "Дослідження трендів відеоігор через платформу Steam"
 
+Посилання на звіт:https://docs.google.com/document/d/19k_GU2vWejJsdAXoxaftdcWbao0AJWO6eL0yNUJi5rk/edit?usp=sharing 
+Посилання на презентацію:https://www.canva.com/design/DAG7AdEp4YQ/CEq1w2GM1aVPU06klMLDkA/edit?utm_content=DAG7AdEp4YQ&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton 
+
 ### Зміст
 1. Початкові дані
 2. ETL Pipeline
